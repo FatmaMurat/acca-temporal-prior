@@ -1,4 +1,4 @@
-# acca-temporal-prior
+
 # Temporal Prior-Guided Segmentation of Pulmonary Lesions in Longitudinal CT
 
 Code and analysis outputs for the study *"Temporal prior-guided segmentation of
