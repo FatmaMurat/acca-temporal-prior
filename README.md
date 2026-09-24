@@ -1,8 +1,7 @@
-
 # Temporal Prior-Guided Segmentation of Pulmonary Lesions in Longitudinal CT
 
-Code and analysis outputs for the study *"Temporal Prior-Guided Segmentation of 
-Pulmonary Lesions in Longitudinal CT: Input-Level versus Prompt-Level Prior 
+Code and analysis outputs for the study *"Temporal Prior-Guided Segmentation of
+Pulmonary Lesions in Longitudinal CT: Input-Level versus Prompt-Level Prior
 Injection"*.
 
 ## Overview
@@ -11,14 +10,29 @@ In longitudinal CT follow-up the lesion delineation from the previous timepoint
 is routinely available, yet rarely used by automatic segmentation methods. This
 work converts the reference mask at t−1 into a soft spatial prior (exponential
 distance encoding, tau = 15 mm) and injects it alongside the image at t. The
-previous image itself is not required. Two injection pathways are compared: a
-fourth input channel at full resolution, and the pretrained SAM2 mask-prompt
-encoder on the stride-16 grid. Experiments cover 244 consecutive t−1→t pairs
-from 136 patients with patient-level 5-fold cross-validation.
+previous image itself is not required.
+
+Two injection pathways are compared with the same backbone and decoder: a fourth
+input channel at full resolution, and the pretrained SAM2 mask-prompt encoder on
+the stride-16 grid. Two further control arms separate the injection site from
+the properties of the prior itself:
+
+* **resolution control** — the prior is averaged to the 32 × 32 grid of the
+  prompt pathway before entering the fourth channel;
+* **encoding control** — the soft prior is replaced by the corresponding binary
+  mask.
+
+The four-channel and prior-free arms are replicated with an EVA-02 backbone, and
+a two-channel nnU-Net and a copy-forward baseline are used as comparators.
+Experiments cover 244 consecutive t−1→t pairs from 136 patients with
+patient-level 5-fold cross-validation. Beyond segmentation accuracy, the
+analysis covers size strata, the failure tail (complete failures and empty
+predictions), area-based growth agreement and RECIST-equivalent categorical
+change.
 
 ## Repository structure
 
-    scripts/    analysis pipeline, run in numerical order (00 → 11)
+    scripts/    analysis pipeline, run in numerical order (00 → 16)
     metrics/    result files underlying the tables and figures of the paper
 
 ## Pipeline
@@ -37,6 +51,11 @@ from 136 patients with patient-level 5-fold cross-validation.
 | `09_prompt_verify.py` | verification of the mask-prompt pathway |
 | `10_growth_bland_altman.py` | area-based growth and categorical change analysis |
 | `11_nnunet_baseline.py` | nnU-Net baseline with the same two channels |
+| `12_lowres_prior.py` | resolution control arm: prior reduced to the 32 × 32 grid before the fourth channel |
+| `13_colab_session.py` | Colab session setup and orchestration of the training runs |
+| `14_binary_prior.py` | encoding control arm: training with a binary prior, and inference-time prior sensitivity (tau sweep, binarised prior, prior removed) |
+| `15_last_epoch.py` | last-epoch evaluation and paired comparisons under both epoch-selection protocols |
+| `16_figures.py` | figures of the paper and the supplementary material |
 
 `temporal_pair_dataloader_v2.py` is the data loader used by `04_train.py`.
 The `_v2` suffix is a remnant of development; it is the only version.
@@ -49,7 +68,9 @@ figure in the paper can be reproduced, including the main comparison
 size strata (`boyut_strata.csv`), ensemble and oracle results
 (`ensemble_pairs.csv`), growth analysis (`growth_sam2_prior.csv`), per-arm
 training logs (`metrics_*.csv`) and the nnU-Net per-fold results
-(`nnunet_prior/`).
+(`nnunet_prior/`). The control arms and the protocol analyses add the per-pair
+results of the 32 × 32 resolution control and of the binary prior, the
+inference-time tau sweep and the last-epoch predictions of all SAM2 arms.
 
 ## Paths and environment
 
