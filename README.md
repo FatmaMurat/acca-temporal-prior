@@ -1,8 +1,9 @@
 
 # Temporal Prior-Guided Segmentation of Pulmonary Lesions in Longitudinal CT
 
-Code and analysis outputs for the study *"Temporal prior-guided segmentation of
-pulmonary lesions in longitudinal CT: the role of injection resolution"*.
+Code and analysis outputs for the study *"Temporal Prior-Guided Segmentation of 
+Pulmonary Lesions in Longitudinal CT: Input-Level versus Prompt-Level Prior 
+Injection"*.
 
 ## Overview
 
